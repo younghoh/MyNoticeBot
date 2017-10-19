@@ -1,14 +1,17 @@
 var RtmClient = require('@slack/client').RtmClient;
 var request = require('request');
 var cheerio = require('cheerio');
+var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
+var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 
 var token = process.env.SLACK_API_TOKEN || '';
 
+// 추가
+function crawlingFunc(baseurl){
+}
+
 var rtm = new RtmClient(token, {logLevel: 'debug'});
 rtm.start();
-
-var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
-var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
     for (const c of rtmStartData.channels) {
@@ -29,18 +32,19 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function(){
     setInterval(() => request(options, function(error, response, body){
         if (error) throw error;
         var $ = cheerio.load(body);
-        console.log($(".title > a"));
-        $(".title > a").each(function(){
-            var title = $(this).text().trim();
-            var href = $(this).attr('href');
-            rtm.sendMessage(`${title} ${href}`, channel);
+        //console.log($(".title > a"));
+        // $(".title > a").each(function(){
+        $(".bd_lst.bd_tb_lst.bd_tb > tbody tr").each(function(){
+            var no = $(this).find('.no').text().trim();
+            var title = $(this).find('.title > a').text().trim();
+            var href = $(this).find('.title > a').attr('href');
+            rtm.sendMessage(`${no} ${title} ${href}`, channel);
             //console.log(title);
         });
         //console.log(body);
     }),10000);
 })
 
-// rtm.on(CLIENT_EVENTS.RTM.)
 
 rtm.on(RTM_EVENTS.MESSAGE, function (message){
     var channel = message.channel;
