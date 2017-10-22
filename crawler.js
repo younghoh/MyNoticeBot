@@ -17,7 +17,27 @@ function equalArray(array, tempArray){
     return resultArray;
 }
 
-function crawlingFunc(baseurl, timer){
+function crawlingFunc(baseurl){
+    var options = {
+        url : baseurl,
+        headers : {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',
+            'Content-Type' : 'application/x-www-form-urlencoded' 
+        }
+    }
+    request(options, function(error, response, body){
+        if (error) throw error;
+        var $ = cheerio.load(body);
+        $(".bd_lst.bd_tb_lst.bd_tb > tbody tr").each(function(){
+            var no = $(this).find('.no').text().trim();
+            var title = $(this).find('.title > a').text().trim();
+            var href = $(this).find('.title > a').attr('href');
+            rtm.sendMessage(`${no} ${title} ${href}`, channel);
+        });
+    });
+}
+
+function timerCrawlingFunc(baseurl, timer){
     var titleArray = [];
     var flag = true;
     var options = {
@@ -68,11 +88,13 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function(){
     rtm.sendMessage("정상적으로 연결", channel);
+    rtm.sendMessage("각 공지사항 별로 1분마다 크롤링하여 새로운 공지가 있을 때 알려줍니다.", channel);
+    rtm.sendMessage("1. 학사공지 2. 일반소식 3. 사업단소식 4. 취업정보를 입력하면 해당 게시글들을 크롤링합니다.", channel);
 
-    let crawlingNotice = crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice", 10);
-    let crawlingGeneralNotice = crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=gnotice", 10);
-    let crawlingSWUnivNotice = crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=saccord", 10);
-    let crawlingJobNotice = crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=job", 10);
+    let crawlingNotice = timerCrawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice", 60);
+    let crawlingGeneralNotice = timerCrawlingFunc("http://computer.cnu.ac.kr/index.php?mid=gnotice", 60);
+    let crawlingSWUnivNotice = timerCrawlingFunc("http://computer.cnu.ac.kr/index.php?mid=saccord", 60);
+    let crawlingJobNotice = timerCrawlingFunc("http://computer.cnu.ac.kr/index.php?mid=job", 60);
     crawlingNotice();
     crawlingGeneralNotice();
     crawlingSWUnivNotice();
@@ -85,8 +107,19 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message){
     var user = message.user;
     var text = message.text;
 
-    if (text == 'hello'){
-        rtm.sendMessage("안녕", channel);
+
+    if(text === "학사공지"){
+        rtm.sendMessage("============학사공지============", channel);
+        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice");
+    }else if(text === "일반소식"){
+        rtm.sendMessage("============일반소식============", channel);
+        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice");
+    }else if(text === "사업단소식"){
+        rtm.sendMessage("============사업단소식============", channel);
+        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice");        
+    }else if(text === "취업정보"){
+        rtm.sendMessage("============취업정보============", channel);
+        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice");        
     }
 })
 
