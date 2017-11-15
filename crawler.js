@@ -113,13 +113,13 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message){
         crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice");
     }else if(text === "일반소식"){
         rtm.sendMessage("============일반소식============", channel);
-        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice");
+        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=gnotice");
     }else if(text === "사업단소식"){
         rtm.sendMessage("============사업단소식============", channel);
-        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice");        
+        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=snotice");        
     }else if(text === "취업정보"){
         rtm.sendMessage("============취업정보============", channel);
-        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=notice");        
+        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=job");        
     }
 })
 
