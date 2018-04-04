@@ -116,7 +116,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (message){
         crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=gnotice");
     }else if(text === "사업단소식"){
         rtm.sendMessage("============사업단소식============", channel);
-        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=snotice");        
+        crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=saccord");        
     }else if(text === "취업정보"){
         rtm.sendMessage("============취업정보============", channel);
         crawlingFunc("http://computer.cnu.ac.kr/index.php?mid=job");        
